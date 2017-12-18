@@ -72,7 +72,62 @@ where $r^2 = z_1^2 + z_2^2$, is the desired transform.
 
 % Then we can compute multivariate normals by transformations:
 % $$ p(x_1,x_2) = [\dfrac{1}{2 \pi} \exp(-\dfrac{1}{2}x_{1}^2)] ... $$
+\medskip
 
+{\bf Exercise:} Box-Muller shows how to sample from a normal distribution with
+each component being independent. Suppose now, however, that we are given $z_1,
+\ldots, z_n \sim \text{Unif}[-1,1]$ and we wish to sample from $\mathcal{N}(\mu,
+\Sigma)$, which is the general Multivariate Normal distribution with $n$
+components. How can you do this?
+
+\medskip
+
+{\bf Solution:} First, we can note that we can transform our $n$ uniform
+distributions into $n$ independent standard Normals $x_1, \ldots, x_n$ (through
+Box-Muller). Then, we can realize that if we can sample from
+$\mathcal{N}(0,\Sigma)$, then we will be able to sample from $\mathcal{N}(\mu,
+\Sigma)$ simply by adding $\mu$ to our sampled vector from the de-meaned
+distribution.
+
+Thus, the only thing that remains is being able to sample from the de-meaned
+distribution. First, we argue that because $\Sigma$ must be positive
+semi-definite, then there must exist an $A$ such that $\Sigma = A A^\top$ (we
+can find such a square root of $\Sigma$ for instance through a Cholesky
+decomposition). Now, we argue that if we denote,
+\[ x = \begin{bmatrix} x_1 & \ldots & x_n \end{bmatrix}^\top \]
+then
+\[ Ax \sim \mathcal{N}(0,\Sigma) \]
+because
+\[ \text{Var}(Ax) = E[(Ax)(Ax)^\top] = E[A(x x^\top) A^\top] = AIA^\top =
+AA^\top = \Sigma, \]
+$E[Ax] = 0$, and $Ax$ must be distributed as a multivariate Normal because it is
+the linear combination of Normal random variables, which shows us how to sample
+from a general Multivariate Normal distribution starting out from uncorrelated
+uniform random variables.
+
+\medskip
+
+{\bf Exercise:} From the probability inverse transform, we see that we can
+sample from any distribution using a uniform random variable. How can we
+generate a uniform random variable from an infinite stream of Bernouilli random
+variables (with parameter $p=.5$).
+
+\medskip
+
+{\bf Solution:} Let our infinite stream be $B_1, \ldots$, and then take,
+\[ U = \sum_{i=1}^\infty \frac{B_i}{2^i} \]
+which we claim is distributed as a uniform random variable. We can show this by
+showing that the probability that this quantity is less than some quantity $x$
+is $x$ (and thus that the CDF is $F(x) = x$). In particular, write $x$ in binary
+such that $x = 0.b_1b_2\ldots$. Then, the event that $U$ is less than $x$ is
+equal to the event that
+\[ b_m = 1 \text{ where } m = \text{argmin}_i b_i \not= B_i.\]
+Thus, the probability that $m = i$ is given by $2^i$, and using the law of total
+probability, we get,
+\[ F(x) = \sum_{i=1}^\infty \frac{b_i}{2^i} = x \]
+by construction of the binary expansion, as desired. Thus, given suffiicent
+random coin tosses, we can sample from a uniform distribution to arbitrary
+precision.
 
 \subsection{Rejection Sampling}
 Assume that we have access to the PDF $p(x)$ or the unnormalized PDF $\tilde p(x)$. The idea is to pick a \textbf{guide function} (valid PDF) $q(x)$ that is similar to $p$ and easy to compute. We also pick a \textbf{scale} $M$. We require that \[
